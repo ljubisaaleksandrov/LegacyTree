@@ -8,9 +8,7 @@ namespace LegacyTree.Controllers
     {
         public override ActionResult Index(RenderModel model)
         {
-            TreeHelper.GenerateTree(Umbraco);
             return View("~/Views/Pages/Home.cshtml", model);
         }
-
     }
 }

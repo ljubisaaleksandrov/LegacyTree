@@ -19,6 +19,7 @@ namespace LegacyTree.ViewModels
         public int y { get; set; }
 
         public List<int> Children { get; set; }
+        public int ParentID { get; set; }
 
         public TreeMemberViewModel(){ }
 
@@ -32,6 +33,7 @@ namespace LegacyTree.ViewModels
                 this.BirthDate = treeMember.BirthDate != DateTime.MinValue ? treeMember.BirthDate.ToShortDateString() : String.Empty;
                 this.DeathDate = treeMember.DateOfDeath != DateTime.MinValue ? treeMember.DateOfDeath.ToShortDateString() : String.Empty;
                 this.Children = treeMember.Children.Where(c => c.IsDocumentType(TreeMember.ModelTypeAlias)).Select(c => c.Id).ToList();
+                this.ParentID = treeMember.Parent.Id;
                 this.Length = CalculateLength(treeMember);
                 this.x = 0;
                 this.y = 0;
