@@ -8,10 +8,12 @@ namespace LegacyTree.Helpers
 {
     public static class TreeHelper
     {
-        private const int MEMBERS_DELIMITER_LENGTH = 5;
-        private const int PARENT_DELIMITER_LENGTH = 15;
+        private const int CHARACTER_LENGTH = 5;
+        private const int MEMBERS_DELIMITER_LENGTH = 20;
+        private const int PARENT_DELIMITER_LENGTH = 50;
+        private const int LEVEL_DELIMITER_LENGTH = 200;
 
-        public static void GenerateTree(UmbracoHelper umbracoHelper)
+        public static List<TreeLayerViewModel> GenerateTree(UmbracoHelper umbracoHelper)
         {
             var root = umbracoHelper.TypedContentAtRoot().FirstOrDefault(i => i.IsDocumentType(MembersContainer.ModelTypeAlias));
 
@@ -19,7 +21,11 @@ namespace LegacyTree.Helpers
             {
                 var tree = InitTree((TreeMember)root.Children.FirstOrDefault(c => c.IsDocumentType(TreeMember.ModelTypeAlias)), null, 0);
                 tree = InitLengths(tree);
-                tree = InitPositions(tree);
+                return tree.InitPositions();
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -50,7 +56,7 @@ namespace LegacyTree.Helpers
         {
             for(int i = 0; i < treeLayers.Count; i++)
             {
-                int layerLength = treeLayers[i].Members.Sum(m => m.Length) + (treeLayers[i].Members.Count - 1) * MEMBERS_DELIMITER_LENGTH;
+                int layerLength = treeLayers[i].Members.Sum(m => m.Length) * CHARACTER_LENGTH + (treeLayers[i].Members.Count - 1) * MEMBERS_DELIMITER_LENGTH;
                 if (i != 0)
                     layerLength += (treeLayers[i - 1].Members.Count) * PARENT_DELIMITER_LENGTH;
 
@@ -60,31 +66,54 @@ namespace LegacyTree.Helpers
             return treeLayers;
         }
 
-        private static List<TreeLayerViewModel> InitPositions(List<TreeLayerViewModel> treeLayers)
+        private static List<TreeLayerViewModel> InitPositions(this List<TreeLayerViewModel> treeLayers)
         {
-            int longestLayer = treeLayers.OrderBy(tl => tl.Length).FirstOrDefault().Level;
-            while(treeLayers.Any(tl => !tl.IsInitialized))
-            {
+            int longestLayer = treeLayers.OrderByDescending(tl => tl.Length).FirstOrDefault().Level;
+            //while(treeLayers.Any(tl => !tl.IsInitialized))
+            //{
                 for(int i = 0; i < treeLayers.Count; i++)
                 {
                     var currentLayer = treeLayers[i];
                     if (!currentLayer.IsInitialized)
                     {
-                        if(currentLayer.Level == longestLayer)
+                        var tmpLayer = new TreeLayerViewModel()
                         {
-                            var tmpLayer = new TreeLayerViewModel();
+                            Level = currentLayer.Level,
+                            Members = new List<TreeMemberViewModel>()
+                        };
+
+                        if (currentLayer.Level == longestLayer)
+                        {
+                            int offset = PARENT_DELIMITER_LENGTH;
+                            int tmpParent = 0;
+
                             foreach(var member in currentLayer.Members)
                             {
+                                if (tmpParent != member.ParentID)
+                                    offset += PARENT_DELIMITER_LENGTH;
 
+                                member.x = offset;
+                                member.y = (treeLayers.Count - tmpLayer.Level) * LEVEL_DELIMITER_LENGTH;
+                                tmpLayer.Members.Add(member);
+
+                                offset += member.Length * CHARACTER_LENGTH + (treeLayers.Count - tmpLayer.Level) * MEMBERS_DELIMITER_LENGTH;
+
+                                tmpParent = member.ParentID;
                             }
+
+                            tmpLayer.Length = offset + PARENT_DELIMITER_LENGTH;
+                            tmpLayer.IsInitialized = true;
                         }
                         else
                         {
-
+                            tmpLayer = currentLayer;
+                            //tmpLayer.IsInitialized = true;
                         }
+
+                        treeLayers[i] = tmpLayer;
                     }
                 }
-            }
+            //}
 
             return treeLayers;
         }
