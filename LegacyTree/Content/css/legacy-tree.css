@@ -1,0 +1,18 @@
+﻿#TreeContainer {
+    position: relative;
+}
+
+#ZoomControll {
+    font-size: 20px;
+    color: #ccc;
+    border: 3px solid #ccc;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    background-color: white
+}
+
+#ZoomControll span {
+    padding: 10px;
+    cursor: pointer;
+}

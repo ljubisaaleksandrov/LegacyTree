@@ -263,6 +263,7 @@
     <Content Include="App_Plugins\uSync\uSyncDashboard.html" />
     <Content Include="App_Plugins\uSync\uSyncDashboardController.js" />
     <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
+    <Content Include="Content\css\legacy-tree.css" />
     <Content Include="Content\scripts\legacy-tree.js" />
     <Content Include="packages.config" />
     <Content Include="config\imageprocessor\security.config" />
@@ -363,7 +364,6 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\css\" />
     <Folder Include="Content\images\" />
     <Folder Include="Views\MacroPartials\" />
   </ItemGroup>
