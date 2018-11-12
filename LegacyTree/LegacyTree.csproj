@@ -345,6 +345,7 @@
   <ItemGroup>
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LegacyTreeSurfaceController.cs" />
+    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Helpers\TreeHelper.cs" />
     <Compile Include="Models\File.generated.cs" />
     <Compile Include="Models\Folder.generated.cs" />
