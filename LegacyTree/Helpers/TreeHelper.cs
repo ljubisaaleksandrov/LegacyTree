@@ -8,7 +8,7 @@ namespace LegacyTree.Helpers
 {
     public static class TreeHelper
     {
-        private const int CHARACTER_LENGTH = 5;
+        private const int CHARACTER_LENGTH = 3;
         private const int MEMBERS_DELIMITER_LENGTH = 20;
         private const int PARENT_DELIMITER_LENGTH = 50;
         private const int LEVEL_DELIMITER_LENGTH = 200;
@@ -56,7 +56,7 @@ namespace LegacyTree.Helpers
         {
             for(int i = 0; i < treeLayers.Count; i++)
             {
-                int layerLength = treeLayers[i].Members.Sum(m => m.Length) * CHARACTER_LENGTH + (treeLayers[i].Members.Count - 1) * MEMBERS_DELIMITER_LENGTH;
+                int layerLength = treeLayers[i].Members.Sum(m => (int)m.Length) * CHARACTER_LENGTH + (treeLayers[i].Members.Count - 1) * MEMBERS_DELIMITER_LENGTH;
                 if (i != 0)
                     layerLength += (treeLayers[i - 1].Members.Count) * PARENT_DELIMITER_LENGTH;
 
@@ -69,51 +69,25 @@ namespace LegacyTree.Helpers
         private static List<TreeLayerViewModel> InitPositions(this List<TreeLayerViewModel> treeLayers)
         {
             int longestLayer = treeLayers.OrderByDescending(tl => tl.Length).FirstOrDefault().Level;
-            //while(treeLayers.Any(tl => !tl.IsInitialized))
-            //{
                 for(int i = 0; i < treeLayers.Count; i++)
                 {
                     var currentLayer = treeLayers[i];
-                    if (!currentLayer.IsInitialized)
+                    var tmpLayer = new TreeLayerViewModel()
                     {
-                        var tmpLayer = new TreeLayerViewModel()
-                        {
-                            Level = currentLayer.Level,
-                            Members = new List<TreeMemberViewModel>()
-                        };
+                        Level = currentLayer.Level,
+                        Members = new List<TreeMemberViewModel>()
+                    };
 
-                        if (currentLayer.Level == longestLayer)
-                        {
-                            int offset = PARENT_DELIMITER_LENGTH;
-                            int tmpParent = 0;
-
-                            foreach(var member in currentLayer.Members)
-                            {
-                                if (tmpParent != member.ParentID)
-                                    offset += PARENT_DELIMITER_LENGTH;
-
-                                member.x = offset;
-                                member.y = (treeLayers.Count - tmpLayer.Level) * LEVEL_DELIMITER_LENGTH;
-                                tmpLayer.Members.Add(member);
-
-                                offset += member.Length * CHARACTER_LENGTH + (treeLayers.Count - tmpLayer.Level) * MEMBERS_DELIMITER_LENGTH;
-
-                                tmpParent = member.ParentID;
-                            }
-
-                            tmpLayer.Length = offset + PARENT_DELIMITER_LENGTH;
-                            tmpLayer.IsInitialized = true;
-                        }
-                        else
-                        {
-                            tmpLayer = currentLayer;
-                            //tmpLayer.IsInitialized = true;
-                        }
-
-                        treeLayers[i] = tmpLayer;
+                    foreach(var member in currentLayer.Members)
+                    {
+                        member.LevelOffset = (treeLayers.Count - tmpLayer.Level) * LEVEL_DELIMITER_LENGTH;
+                        tmpLayer.Members.Add(member);
                     }
+
+                    tmpLayer.IsInitialized = true;
+
+                    treeLayers[i] = tmpLayer;
                 }
-            //}
 
             return treeLayers;
         }
