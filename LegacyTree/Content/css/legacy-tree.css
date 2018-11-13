@@ -1,5 +1,8 @@
 ﻿#TreeContainer {
     position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
 }
 
 #ZoomControll {
@@ -15,4 +18,12 @@
 #ZoomControll span {
     padding: 10px;
     cursor: pointer;
+}
+
+svg {
+    cursor: pointer;
+}
+
+svg.moving{
+    cursor: grabbing;
 }
