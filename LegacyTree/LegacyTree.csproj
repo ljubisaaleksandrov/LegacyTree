@@ -265,6 +265,7 @@
     <Content Include="App_Plugins\uSync\uSyncDashboardService.js" />
     <Content Include="Content\css\legacy-tree.css" />
     <Content Include="Content\scripts\legacy-tree.js" />
+    <Content Include="Content\scripts\treeviz.js" />
     <Content Include="packages.config" />
     <Content Include="config\imageprocessor\security.config" />
     <Content Include="config\imageprocessor\processing.config" />

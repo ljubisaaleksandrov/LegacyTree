@@ -3,15 +3,26 @@ using Umbraco.Web;
 using System.Linq;
 using Umbraco.Web.PublishedContentModels;
 using LegacyTree.ViewModels;
+using System;
 
 namespace LegacyTree.Helpers
 {
+    public class TreevizNode
+    {
+        public int id {get; set;}
+        public string text_1 {get; set;}
+        public string text_2 {get; set;}
+        public int? father {get; set;}
+        public string color {get; set;} 
+    }
+
     public static class TreeHelper
     {
         private const int CHARACTER_LENGTH = 3;
         private const int MEMBERS_DELIMITER_LENGTH = 20;
         private const int PARENT_DELIMITER_LENGTH = 50;
         private const int LEVEL_DELIMITER_LENGTH = 200;
+        private const string Format = "{{id:{0}, text_1:{1}, text_2:{2}, father:{3}, color:{4}}}";
 
         public static List<TreeLayerViewModel> GenerateTree(UmbracoHelper umbracoHelper)
         {
@@ -27,6 +38,45 @@ namespace LegacyTree.Helpers
             {
                 return null;
             }
+        }
+
+        public static List<dynamic> TreeToJson(List<TreeLayerViewModel> tree)
+        {
+            List<dynamic> result = new List<dynamic>();
+            foreach(var layer in tree)
+            {
+                if(layer.Level < 10)
+                {
+                    foreach (var node in layer.Members)
+                    {
+                        result.Add(node.ToTreevizNode());
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static dynamic ToTreevizNode(this TreeMemberViewModel node)
+        {
+            dynamic result;
+            try
+            {
+                //{ id: 1, text_1: "Chaos", text_2: "Void", father: null, color: "#2196F3" },
+                //result = string.Format(Format, node.ID, node.Name, node.Spouse, node.ParentID == 1061 ? "null" : node.ParentID.ToString(), "#2196F3");
+                result = new TreevizNode()
+                {
+                    id = node.ID,
+                    text_1 = node.Name,
+                    text_2 = node.Spouse,
+                    father = node.ParentID,
+                    color = "#91c6F3"
+                };
+            }
+            catch(Exception ex){
+                result = ex.Message;
+            }
+            return result;
         }
 
         private static List<TreeLayerViewModel> InitTree(TreeMember currentElement, List<TreeLayerViewModel> treeLayers, int currentLevel)
